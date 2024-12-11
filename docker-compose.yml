@@ -1,0 +1,124 @@
+version: '2.1'
+
+services:
+  #######################################
+  # Postgres: Kong Database
+  #######################################
+  kong-db:
+    image: postgres:13
+    container_name: kong-db
+    networks:
+      - kong-net
+    environment:
+      POSTGRES_DB: kong
+      POSTGRES_USER: kong
+      POSTGRES_PASSWORD: kong
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "kong"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: on-failure
+    volumes:
+      - kong-db-data:/var/lib/postgresql/data
+  #######################################
+  # Kong database migration
+  #######################################
+  kong-migrations:
+    image: kong/kong-gateway:3.2.1.0
+    command: kong migrations bootstrap
+    container_name: kong-migrations
+    networks:
+      - kong-net
+    depends_on:
+      kong-db:
+        condition: service_healthy
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: kong-db
+      KONG_PG_DATABASE: kong
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: kong
+    restart: on-failure
+  #######################################
+  # Kong: The API Gateway
+  #######################################
+  kong-ce:
+    image: kong/kong-gateway:3.2.1.0
+    container_name: kong
+    networks:
+      - kong-net
+    restart: on-failure
+    depends_on:
+      kong-db:
+        condition: service_healthy
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: kong-db
+      KONG_PG_DATABASE: kong
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: kong
+      KONG_PROXY_LISTEN: 0.0.0.0:8000, 0.0.0.0:8443 ssl
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001, 0.0.0.0:8444 ssl
+
+     # KONG_SSL: "on"
+     # KONG_SSL_CERT: /certs/domain.crt
+     # KONG_SSL_CERT_KEY: /certs/domain.key
+     # KONG_LICENSE_DATA: 'Add License Key'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://kong-ce:8001"]
+      interval: 5s
+      timeout: 2s
+      retries: 10
+
+    ports:
+      - "8000-8001:8000-8001/tcp"
+      - "8443:8443"
+      - "8444:8444"
+
+  #volumes:
+  ##    - ./certs:/certs
+  #######################################
+  # Service1: Microservice 1
+  #######################################
+  service1:
+    image: node:18-alpine
+    container_name: service1
+    networks:
+      - kong-net
+    environment:
+      - NODE_ENV=production
+    working_dir: /app
+    command: sh -c "yarn install && node index.js"
+    volumes:
+      - ./service1:/app
+    expose:
+      - 3001
+    ports:
+      - "3001:3001"
+    restart: on-failure
+
+  #######################################
+  # Service2: Microservice 2
+  #######################################
+  service2:
+    image: node:18-alpine
+    container_name: service2
+    networks:
+      - kong-net
+    environment:
+      - NODE_ENV=production
+    working_dir: /app
+    command: sh -c "yarn install && node index.js"
+    volumes:
+      - ./service2:/app
+    expose:
+      - 3002
+    ports:
+      - "3002:3002"
+    restart: on-failure
+networks:
+  kong-net:
+    external: true
+volumes:
+  kong-db-data:
