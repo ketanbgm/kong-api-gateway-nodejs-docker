@@ -33,9 +33,19 @@
 const express = require('express');
 const app = express();
 
-app.get('/api/v1/service1', (req, res) => {
-  res.json({ message: 'Hello from Service 1!' });
+// Define multiple endpoints for Service1
+app.get('/api/v1/endpoint1', (req, res) => {
+  res.json({ message: 'Hello from Service 1 - Endpoint 1!' });
 });
+
+app.get('/api/v1/endpoint2', (req, res) => {
+  res.json({ message: 'Hello from Service 1 - Endpoint 2!' });
+});
+
+app.get('/api/v1/endpoint3', (req, res) => {
+  res.json({ message: 'Hello from Service 1 - Endpoint 3!' });
+});
+
 
 const PORT = 3001;
 app.listen(PORT, () => {

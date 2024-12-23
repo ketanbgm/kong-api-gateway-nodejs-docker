@@ -2,56 +2,6 @@ version: '2.1'
 
 services:
   #######################################
-  # MySQL Database for Keycloak
-  #######################################
-  keycloak-db:
-    image: mysql:8.0
-    container_name: keycloak-db
-    networks:
-      - kong-net
-    environment:
-      MYSQL_DATABASE: keycloak
-      MYSQL_USER: keycloak
-      MYSQL_PASSWORD: keycloak
-      MYSQL_ROOT_PASSWORD: rootpassword
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    restart: on-failure
-    volumes:
-      - keycloak-db-data:/var/lib/mysql
-
-  #######################################
-  # Keycloak: Identity Provider
-  #######################################
-  keycloak:
-    image: quay.io/keycloak/keycloak:latest
-    container_name: keycloak
-    networks:
-      - kong-net
-    environment:
-      KC_DB: mysql
-      KC_DB_URL: jdbc:mysql://keycloak-db:3306/keycloak
-      KC_DB_USERNAME: keycloak
-      KC_DB_PASSWORD: keycloak
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
-    ports:
-      - "8080:8080"
-    command: start-dev
-    depends_on:
-      keycloak-db:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://keycloak:8080"]
-      interval: 5s
-      timeout: 2s
-      retries: 10
-    restart: on-failure
-
-  #######################################
   # Postgres: Kong Database
   #######################################
   kong-db:
@@ -71,6 +21,55 @@ services:
     restart: on-failure
     volumes:
       - kong-db-data:/var/lib/postgresql/data
+
+  #######################################
+  # Keycloak Database
+  #######################################
+  keycloak-db:
+    image: postgres:13
+    container_name: keycloak-db
+    networks:
+      - kong-net
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "keycloak"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: on-failure
+    volumes:
+      - keycloak-db-data:/var/lib/postgresql/data
+
+  #######################################
+  # Keycloak: Identity Provider
+  #######################################
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
+    networks:
+      - kong-net
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8080:8080"
+    command: start-dev
+    depends_on:
+      keycloak-db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://keycloak:8080"]
+      interval: 5s
+      timeout: 2s
+      retries: 10
+    restart: on-failure
 
   #######################################
   # Kong database migration
@@ -123,11 +122,11 @@ services:
       - "8444:8444"
 
   #######################################
-  # Service1: Microservice 1 (2 Instances)
+  # Service1: Microservice 1
   #######################################
-  service1-1:
+  service1:
     image: node:18-alpine
-    container_name: service1-1
+    container_name: service1
     networks:
       - kong-net
     environment:
@@ -142,29 +141,12 @@ services:
       - "3001:3001"
     restart: on-failure
 
-  service1-2:
-    image: node:18-alpine
-    container_name: service1-2
-    networks:
-      - kong-net
-    environment:
-      - NODE_ENV=production
-    working_dir: /app
-    command: sh -c "yarn install && node index.js"
-    volumes:
-      - ./service1:/app
-    expose:
-      - 3001
-    ports:
-      - "3003:3001"
-    restart: on-failure
-
   #######################################
-  # Service2: Microservice 2 (2 Instances)
+  # Service2: Microservice 2
   #######################################
-  service2-1:
+  service2:
     image: node:18-alpine
-    container_name: service2-1
+    container_name: service2
     networks:
       - kong-net
     environment:
@@ -177,23 +159,6 @@ services:
       - 3002
     ports:
       - "3002:3002"
-    restart: on-failure
-
-  service2-2:
-    image: node:18-alpine
-    container_name: service2-2
-    networks:
-      - kong-net
-    environment:
-      - NODE_ENV=production
-    working_dir: /app
-    command: sh -c "yarn install && node index.js"
-    volumes:
-      - ./service2:/app
-    expose:
-      - 3002
-    ports:
-      - "3004:3002"
     restart: on-failure
 
 networks:
