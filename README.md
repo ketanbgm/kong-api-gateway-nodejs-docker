@@ -212,6 +212,33 @@ If successful, you should receive Keycloak’s realm information.
 Now that Kong is exposing Keycloak's API, we can add a user by making a POST request to Kong.
 
 ### 1. Get Admin Token (via Kong)
+1. Log in to the Keycloak Admin Console
+Navigate to your Keycloak admin console. The URL typically looks like this:
+
+
+https://<keycloak-server>/auth/admin/
+Log in with an admin account.
+
+2. Select the Realm
+From the Keycloak admin console, select the realm that you are working with. If you're not sure about the realm, it's typically the name of your application or environment (e.g., master, myapp, etc.).
+3. Create a New Client (if not already created)
+Go to the Clients section in the left-hand menu under your realm.
+
+Click the Create button.
+
+Fill out the required fields, such as:
+
+Client ID: The unique identifier for your application. This will be the client_id used when calling Keycloak's token introspection or authentication endpoints.
+Root URL: The base URL of your application (optional).
+Click Save.
+
+4. Obtain the Client Secret
+After creating the client, follow these steps to get the client secret:
+
+Select the Credentials tab for the newly created client.
+You should see the Client Secret under the Secret field.
+If there is no secret, you can regenerate it by clicking the Regenerate Secret button.
+
 
 To get an admin token from Keycloak via Kong, use the following request:
 
@@ -219,10 +246,13 @@ To get an admin token from Keycloak via Kong, use the following request:
 curl --location --request POST 'http://localhost:8000/keycloak/realms/master/protocol/openid-connect/token' \
 --header 'Content-Type: application/x-www-form-urlencoded' \
 --data-urlencode 'client_id=admin-cli' \
+--data-urlencode 'client_secret=<client-secret>' \
 --data-urlencode 'username=admin' \
 --data-urlencode 'password=admin' \
 --data-urlencode 'grant_type=password'
 ```
+
+
 
 **Response:**
 ```json

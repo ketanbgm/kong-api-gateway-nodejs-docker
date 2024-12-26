@@ -1,0 +1,50 @@
+curl --location --request POST 'http://localhost:8000/keycloak/admin/realms/master/users' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJqSEpRZHdnQUdnNHRtMVBIS05wRTRweUdCQU1PSTN2OVEwRjlpamFnVXlFIn0.eyJleHAiOjE3MzQ5NDY4NzUsImlhdCI6MTczNDk0NjgxNSwianRpIjoiZWVjYjI0ZDAtMzVlNy00MGI2LTk5ODMtZTNmYzc1MmE1MDE0IiwiaXNzIjoiaHR0cDovL2tleWNsb2FrOjgwODAvcmVhbG1zL21hc3RlciIsInR5cCI6IkJlYXJlciIsImF6cCI6ImFkbWluLWNsaSIsInNpZCI6IjllMTFhYWRiLWQzN2ItNDQ4MC1hZmVjLTcxNzZmMjE2ZmFkZSIsInNjb3BlIjoiZW1haWwgcHJvZmlsZSJ9.Obb2hTGwZiFiB96bopSC1fHB1lMOLbCNuTTNe_lkdL0ilzjkvuH8RswYDWq07m4URinpYh6t8W0nZdjKJVlvJcuCTqTG0Y7ZNvCvoSP-x5ELMhms6S_HqEYkgnLjE-oYWsSOyjnGeoDdOp6MRSy8fpuZAHAVWZ3hGG-wK1ygcCtf7jxaGWST9nUpMrUFpLBPTybFcXF262nGe794-RW-cjqUE_PWjW87vwFwNco8Ur38w-6s9ENme51UdlzKvxQfePE7sA1xN2Ocf5LBWRK8Q-ba4GdIo94aWUKsqUq2gaHlTzJ91fJBVUQYy4aChvre56bGvOCxepYXZV8NQFFInw' \
+--data-raw '{
+  "username": "testuser",
+  "email": "testuser@example.com",
+  "firstName": "Test",
+  "lastName": "User",
+  "enabled": true,
+  "credentials": [
+    {
+      "type": "password",
+      "value": "Test@123",
+      "temporary": false
+    }
+  ]
+}'
+
+
+curl -X GET http://localhost:3001/api/v1/endpoint1 \
+    --header "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGWUlWaFN3UEk1VWJnSGpqbVRzZFBhdUU5NTdHbkY3ZjRoLXJDU1FTSHJBIn0.eyJleHAiOjE3MzQ5NDQ4OTUsImlhdCI6MTczNDk0NDgzNSwianRpIjoiMzI2NGVkMGItN2NkNi00NDU1LWJhMjQtZDBjN2Y3NmFlNjU2IiwiaXNzIjoiaHR0cDovL2tleWNsb2FrOjgwODAvcmVhbG1zL21hc3RlciIsInR5cCI6IkJlYXJlciIsImF6cCI6ImFkbWluLWNsaSIsInNpZCI6ImExYzk5YzYzLWZkM2QtNGZlNS1hZDYzLTE0N2NmMzFkNzU3YSIsInNjb3BlIjoicHJvZmlsZSBlbWFpbCJ9.gezDZ0js0qQSt6cvBKe9Btk-4u-sbwP5aAx6WpO5DnRb0ChYcDGzsCdShqhhMTw6hi7xnZRL6cLl2zmeRJQX8UIWBx2oeUD1iwZYwKp0FaSugU1XNYdHo_dmSWG__JAxUHFrYBE7nHX7TRR84D1bsi6PMZbDkrN3WbB-Tu2GKFElE0LTholOnkxHfoUb5oNpz6sS35itGvLDJdj4vdVsl2-m4CZB1LzmimIYOGjPxbHrdE3GzbTHHJMax54pjECCUi6iVCM5H75jY1p7EYDgpY4GaXJY_4fDvGrGXRe2Peo1xR2KMkhSYfU9WHwEvu5tfetjwmWJXp_oWd8TnxGIpw"
+
+    curl -X GET http://localhost:3005/api/v1/endpoint1 \
+    --header "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJqSEpRZHdnQUdnNHRtMVBIS05wRTRweUdCQU1PSTN2OVEwRjlpamFnVXlFIn0.eyJleHAiOjE3MzQ5NDY5MTEsImlhdCI6MTczNDk0Njg1MSwianRpIjoiYTM4NTYwYWMtYmNlZS00OTY4LTlmNjktNDgzMmQzMWZlMTA2IiwiaXNzIjoiaHR0cDovL2tleWNsb2FrOjgwODAvcmVhbG1zL21hc3RlciIsInR5cCI6IkJlYXJlciIsImF6cCI6ImFkbWluLWNsaSIsInNpZCI6ImQ5OTgyMTc1LTRjODYtNDFkZi1iODM5LWE2OWRmMjc2YWM3ZCIsInNjb3BlIjoiZW1haWwgcHJvZmlsZSJ9.Ex9dnZ7TFTBGMQ8x3roTP7FVTifc1VjRLYBPFeCWogzaLGAaaV8YguKjItwxkWXQV2uH62W0taF-ic54dcw1iKnH9qbji1r5WN1BcBV4M9eHHXMv0mAisyDbBpYjaMFWyMpY3mgv6CRNyNUkMqfWXCHocBRemTc9VQWQPGGiaxhE3SwIadXaBoVWkcDgG2hhxi71vGIV4iGFkG1P70KuWWJBcHqtT21ur4pZC1FfqxGhpjdWGMBKqOrLgoVxvxA51lNxB1l6hqf6irdLCcqte-jiqOrOLn8BGSLm7x_Z9id6lk1qKlo3lnwRPJfZ3xdEcCuOTr2ZEilW4uB54TSrHQ"
+
+
+
+
+
+
+
+// to get login user and get token
+
+curl --location --request POST 'http://localhost:8000/keycloak/realms/master/protocol/openid-connect/token' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data-urlencode 'client_id=admin-cli' \
+--data-urlencode 'client_secret=Za0kVHJTVeSiLPZzqXpCBGG1omSJT5nA' \
+--data-urlencode 'username=testuser' \
+--data-urlencode 'password=Test@123' \
+--data-urlencode 'grant_type=password'
+
+// to validate token from keycloak
+
+
+  curl -X POST \
+  http://localhost:8000/keycloak/realms/master/protocol/openid-connect/token/introspect \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "token=eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJqSEpRZHdnQUdnNHRtMVBIS05wRTRweUdCQU1PSTN2OVEwRjlpamFnVXlFIn0.eyJleHAiOjE3MzQ5NTYxOTUsImlhdCI6MTczNDk1NjEzNSwianRpIjoiOTc0NDcwMDEtZDk3MC00NjE4LTg0YzctNTI2ZDViMzcxZjY1IiwiaXNzIjoiaHR0cDovL2tleWNsb2FrOjgwODAvcmVhbG1zL21hc3RlciIsInR5cCI6IkJlYXJlciIsImF6cCI6ImFkbWluLWNsaSIsInNpZCI6Ijc2MGU0ZGVkLTRmMTctNDU3OC04NzQxLTNiYzA4ZWMwOTQ3NyIsInNjb3BlIjoiZW1haWwgcHJvZmlsZSJ9.VZeIdBi1iz5n0lwqVckghj4L4Cb1ThLxD7GAvcMDkg6Sgw3AzilZLVh45RAuIjmHOYfqs1m5Wfyh_FXlbY9GdlX2B-wgJ6Yj80vdyC3DJW10BLqC-RTbnv6mRUoGIcZ5GZmnLhX0qJV3c8ghFZPzLtIcPSq--nX4GTYGH5eGgAVZspVPCwHiEj1bYcfK7lnQSQ2bI8he8rVzN4GlmZmMpC181iOxz8r1hRxOFhOznLOEBV1tUjnzjCVtOoxuUDYGHFbMiEs6_X2wHL0FbwSCwZToQarY0GwwBcfvz8L2GABZ0-C99KlTmKF-aez2Wz7ICqKa5jBun4ulfRs5Ggfm6A" \
+  -d "client_id=admin-cli" \
+  -d "client_secret=Za0kVHJTVeSiLPZzqXpCBGG1omSJT5nA"

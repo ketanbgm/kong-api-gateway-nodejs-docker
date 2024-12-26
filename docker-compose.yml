@@ -40,6 +40,8 @@ services:
       KEYCLOAK_ADMIN_PASSWORD: admin
     ports:
       - "8080:8080"
+    volumes:
+      - keycloak_data:/opt/jboss/keycloak/standalone/data
     command: start-dev
     depends_on:
       keycloak-db:
@@ -203,3 +205,4 @@ networks:
 volumes:
   kong-db-data:
   keycloak-db-data:
+  keycloak_data:
